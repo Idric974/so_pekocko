@@ -1,20 +1,19 @@
-const Sauces = require("../models/Sauces");
+/****Implémentation des routes CRUD (Create, Read, Update, Delete)****/
 
+const Sauces = require("../models/Sauces");
+const fs = require("fs");
+
+/****Create : créer une nouvelle sauce****/
 exports.createSauces = (req, res, next) => {
-  const Sauces = new Sauces({
-    userId: req.body.userId,
-    name: req.body.name,
-    manufacturer: req.body.manufacturer,
-    description: req.body.description,
-    mainPepper: req.body.mainPepper,
-    imageUrl: req.body.imageUrl,
-    heat: req.body.heat,
-    likes: req.body.likes,
-    dislikes: req.body.dislikes,
-    usersLiked: req.body.usersLiked,
-    usersDisliked: req.body.usersDisliked,
+  const saucesObject = JSON.parse(req.body.sauces);
+  delete saucesObject._id;
+  const sauces = new Sauces({
+    ...saucesObject,
+    imageUrl: `${req.protocol}://${req.get("host")}/images/${
+      req.file.filename
+    }`,
   });
-  console.log(Sauces);
+
   sauces
     .save()
     .then(() => {
@@ -27,8 +26,11 @@ exports.createSauces = (req, res, next) => {
         error: error,
       });
     });
+  console.log(Sauces);
 };
+/*****************************************/
 
+/****Read : afficher la fiche produit d'une sauce****/
 exports.getOneSauces = (req, res, next) => {
   Sauces.findOne({
     _id: req.params.id,
@@ -42,43 +44,43 @@ exports.getOneSauces = (req, res, next) => {
       });
     });
 };
+/*****************************************/
 
+/****Update : mettre à jour la fiche produit d’une sauce****/
 exports.modifySauces = (req, res, next) => {
-  const sauces = new Sauces({
-    _id: req.params.id,
-    title: req.body.title,
-    description: req.body.description,
-    imageUrl: req.body.imageUrl,
-    price: req.body.price,
-    userId: req.body.userId,
-  });
-  Sauces.updateOne({ _id: req.params.id }, sauces)
-    .then(() => {
-      res.status(201).json({
-        message: "Sauces updated successfully!",
-      });
-    })
-    .catch((error) => {
-      res.status(400).json({
-        error: error,
-      });
-    });
+  const saucesObject = req.file
+    ? {
+        ...JSON.parse(req.body.sauces),
+        imageUrl: `${req.protocol}://${req.get("host")}/images/${
+          req.file.filename
+        }`,
+      }
+    : { ...req.body };
+  Sauces.updateOne(
+    { _id: req.params.id },
+    { ...saucesObject, _id: req.params.id }
+  )
+    .then(() => res.status(200).json({ message: "Objet modifié !" }))
+    .catch((error) => res.status(400).json({ error }));
 };
+/*****************************************/
 
+/****Delete : supprimer la fiche produit d’une sauce****/
 exports.deleteSauces = (req, res, next) => {
-  Sauces.deleteOne({ _id: req.params.id })
-    .then(() => {
-      res.status(200).json({
-        message: "sauce supprimée",
+  Sauces.findOne({ _id: req.params.id })
+    .then((sauces) => {
+      const filename = sauces.imageUrl.split("/images/")[1];
+      fs.unlink(`images/${filename}`, () => {
+        Sauces.deleteOne({ _id: req.params.id })
+          .then(() => res.status(200).json({ message: "Objet supprimé !" }))
+          .catch((error) => res.status(400).json({ error }));
       });
     })
-    .catch((error) => {
-      res.status(400).json({
-        error: error,
-      });
-    });
+    .catch((error) => res.status(500).json({ error }));
 };
+/*****************************************/
 
+/****Afficher toutes le sauces****/
 exports.getAllStuff = (req, res, next) => {
   Sauces.find()
     .then((sauces) => {

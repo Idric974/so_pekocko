@@ -1,3 +1,5 @@
+/****Gestion des fichiers envoyés par des requêtes HTTP vers l’API****/
+
 const multer = require("multer");
 
 const MIME_TYPES = {

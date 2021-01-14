@@ -1,23 +1,14 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const path = require("path");
+
+const app = express();
 
 const stuffRoutes = require("./routes/Stuff");
 const userRoutes = require("./routes/User");
 
-/****Permet la connexion à la base de données  MongodB **********/
-mongoose
-  .connect(
-    "mongodb+srv://idric:QTuFKc2h8PQwEYL9@clusterocr.5mhqb.mongodb.net/<dbname>?retryWrites=true&w=majority",
-    { useNewUrlParser: true, useUnifiedTopology: true }
-  )
-  .then(() => console.log("Connexion à MongoDB réussie !"))
-  .catch(() => console.log("Connexion à MongoDB échouée !"));
-/****************************************************************/
-
-const app = express();
-
-/****Middleware généraliste qui permet la connexion entre l'application et l'API  et évite les erreurs CORS*****/
+/****Middleware généraliste qui permet la connexion entre l'application et l'API et évite les erreurs CORS*****/
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -31,11 +22,22 @@ app.use((req, res, next) => {
   next();
 });
 
+/****Permet la connexion à la base de données  MongodB **********/
+mongoose
+  .connect(
+    "mongodb+srv://idric:QTuFKc2h8PQwEYL9@clusterocr.5mhqb.mongodb.net/<dbname>?retryWrites=true&w=majority",
+    { useNewUrlParser: true, useUnifiedTopology: true }
+  )
+  .then(() => console.log("Connexion à MongoDB réussie !"))
+  .catch(() => console.log("Connexion à MongoDB échouée !"));
+/****************************************************************/
+
 /****Transforme le corps de la requête en objet JSON*****/
 app.use(bodyParser.json());
 /********************************************************/
 
-app.use("/api/stuff", stuffRoutes);
+app.use("/images", express.static(path.join(__dirname, "images")));
+app.use("/api/sauces", stuffRoutes);
 app.use("/api/auth", userRoutes);
 
 module.exports = app;

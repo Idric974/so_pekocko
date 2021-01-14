@@ -1,3 +1,5 @@
+/****Middleware qui vérifie le token envoyé par l'application front-end****/
+
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
