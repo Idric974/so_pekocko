@@ -25,14 +25,14 @@ app.use((req, res, next) => {
 /****Permet la connexion à la base de données  MongodB **********/
 mongoose
   .connect(
-    "mongodb+srv://idric:QTuFKc2h8PQwEYL9@clusterocr.5mhqb.mongodb.net/<dbname>?retryWrites=true&w=majority",
+    "mongodb+srv://idric:QTuFKc2h8PQwEYL9@clusterocr.5mhqb.mongodb.net/sopekocko?retryWrites=true&w=majority",
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 /****************************************************************/
 
-/****Transforme le corps de la requête en objet JSON*****/
+/****Transforme le corps de la requête en objet JSON utilisable*****/
 app.use(bodyParser.json());
 /********************************************************/
 

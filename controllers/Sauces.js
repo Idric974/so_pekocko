@@ -5,18 +5,30 @@ const fs = require("fs");
 
 /****Create : créer une nouvelle sauce****/
 exports.createSauces = (req, res, next) => {
-  const saucesObject = JSON.parse(req.body.sauces);
-  delete saucesObject._id;
+  /*const saucesObject = JSON.parse(req.body.sauces);*/
+  const saucesObject = JSON.parse(req.body.sauce);
+
   const sauces = new Sauces({
     ...saucesObject,
     imageUrl: `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
     }`,
   });
-
-  sauces
-    .save()
-    .then(() => {
+  console.log(sauces.imageUrl);
+  sauces.save(function (err, b) {
+    if (err) {
+      console.log("#########", err);
+      res.status(400).json({
+        error: err,
+      });
+    } else {
+      console.log(b);
+      res.status(201).json({
+        message: "Post saved successfully!",
+      });
+    }
+  });
+  /*.then(() => {
       res.status(201).json({
         message: "Post saved successfully!",
       });
@@ -25,8 +37,7 @@ exports.createSauces = (req, res, next) => {
       res.status(400).json({
         error: error,
       });
-    });
-  console.log(Sauces);
+    });*/
 };
 /*****************************************/
 
