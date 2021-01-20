@@ -2,10 +2,10 @@
 
 const Sauces = require("../models/Sauces");
 const fs = require("fs");
+const { post } = require("../routes/User");
 
 /****Create : créer une nouvelle sauce****/
 exports.createSauces = (req, res, next) => {
-  /*const saucesObject = JSON.parse(req.body.sauces);*/
   const saucesObject = JSON.parse(req.body.sauce);
 
   const sauces = new Sauces({
@@ -24,20 +24,10 @@ exports.createSauces = (req, res, next) => {
     } else {
       console.log(b);
       res.status(201).json({
-        message: "Post saved successfully!",
+        message: "Sauces crée!",
       });
     }
   });
-  /*.then(() => {
-      res.status(201).json({
-        message: "Post saved successfully!",
-      });
-    })
-    .catch((error) => {
-      res.status(400).json({
-        error: error,
-      });
-    });*/
 };
 /*****************************************/
 
@@ -61,7 +51,7 @@ exports.getOneSauces = (req, res, next) => {
 exports.modifySauces = (req, res, next) => {
   const saucesObject = req.file
     ? {
-        ...JSON.parse(req.body.sauces),
+        ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get("host")}/images/${
           req.file.filename
         }`,
@@ -71,7 +61,7 @@ exports.modifySauces = (req, res, next) => {
     { _id: req.params.id },
     { ...saucesObject, _id: req.params.id }
   )
-    .then(() => res.status(200).json({ message: "Objet modifié !" }))
+    .then(() => res.status(200).json({ message: "Sauce modifié !" }))
     .catch((error) => res.status(400).json({ error }));
 };
 /*****************************************/
@@ -83,7 +73,7 @@ exports.deleteSauces = (req, res, next) => {
       const filename = sauces.imageUrl.split("/images/")[1];
       fs.unlink(`images/${filename}`, () => {
         Sauces.deleteOne({ _id: req.params.id })
-          .then(() => res.status(200).json({ message: "Objet supprimé !" }))
+          .then(() => res.status(200).json({ message: "Sauce supprimé !" }))
           .catch((error) => res.status(400).json({ error }));
       });
     })
@@ -103,3 +93,16 @@ exports.getAllSauces = (req, res, next) => {
       });
     });
 };
+
+/*****************************************/
+
+/****Create : Cré un like****/
+exports.likeSauces = (req, res, next) => {
+  console.log("############----OK1----############");
+
+  Sauces.Update()
+
+    .then(() => res.status(200).json({ message: "Like ajouté" }))
+    .catch((error) => res.status(400).json({ error }));
+};
+/*****************************************/
