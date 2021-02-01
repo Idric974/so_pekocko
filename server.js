@@ -1,4 +1,5 @@
 const http = require("http");
+require("dotenv").config();
 const app = require("./app");
 
 const normalizePort = (val) => {
@@ -26,6 +27,7 @@ const errorHandler = (error) => {
     case "EACCES":
       console.error(bind + " requires elevated privileges.");
       process.exit(1);
+
       break;
     case "EADDRINUSE":
       console.error(bind + " is already in use.");

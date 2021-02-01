@@ -1,6 +1,26 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { models } = require("mongoose");
 const User = require("../models/User");
+
+const mask = (str) => {
+  let output = "";
+  for (let i = 0; i < str.length; i++) {
+    if (i < str.length / 2) {
+      output += str[i];
+    } else {
+      output += "*";
+    }
+  }
+  return output;
+};
+
+const maskEmail = (emailstr) => {
+  const emailParts = emailstr.split("@");
+  const leftPart = mask(emailParts[0]);
+  const rightPart = mask(emailParts[1]);
+  return leftPart + "@" + rightPart;
+};
 
 /****Mot de passe crypté grâce au package bcrypt****/
 exports.signup = (req, res, next) => {
@@ -11,6 +31,7 @@ exports.signup = (req, res, next) => {
         email: req.body.email,
         password: hash,
       });
+
       user
         .save()
         .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
@@ -22,6 +43,7 @@ exports.signup = (req, res, next) => {
 
 /****Fonction qui permet aux utilisateurs existants de se connecter****/
 exports.login = (req, res, next) => {
+  console.log(maskEmail(req.body.email));
   User.findOne({ email: req.body.email })
     .then((user) => {
       if (!user) {
@@ -34,8 +56,9 @@ exports.login = (req, res, next) => {
             return res.status(401).json({ error: "Mot de passe incorrect !" });
           }
           res.status(200).json({
+            userEmail: maskEmail(req.body.email),
             userId: user._id,
-            token: jwt.sign({ userId: user._id }, "RANDOM_TOKEN_SECRET", {
+            token: jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
               expiresIn: "24h",
             }),
           });

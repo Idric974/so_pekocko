@@ -1,14 +1,18 @@
 const express = require("express");
+
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const path = require("path");
 
 const app = express();
 
+const helmet = require("helmet");
+app.use(helmet());
+
 const saucesRoutes = require("./routes/Sauces");
 const userRoutes = require("./routes/User");
 
-/****Middleware généraliste qui permet la connexion entre l'application et l'API et évite les erreurs CORS*****/
+/****Middleware généraliste qui reçoit et traite toutes les requêtes*****/
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -25,7 +29,9 @@ app.use((req, res, next) => {
 /****Permet la connexion à la base de données  MongodB **********/
 mongoose
   .connect(
-    "mongodb+srv://idric:QTuFKc2h8PQwEYL9@clusterocr.5mhqb.mongodb.net/sopekocko?retryWrites=true&w=majority",
+    "mongodb+srv://user_2:" +
+      process.env.MONGO_DB_PW +
+      "@clusterocr.5mhqb.mongodb.net/sopekocko?retryWrites=true&w=majority",
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => console.log("Connexion à MongoDB réussie !"))
