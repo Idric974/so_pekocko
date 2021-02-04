@@ -185,6 +185,10 @@ exports.likesSauces = (req, res, next) => {
           supLike(req.params.id, req.body.userId, res);
         } else if (sauce.usersDisliked.includes(req.body.userId)) {
           supDislike(req.params.id, req.body.userId, res);
+          console.log(
+            "=====> L'utilisateur annule son Dislike ==> Paramètres URL = ",
+            req.body.like
+          );
         } else {
           return res.status(400).json({ message: "erreur" });
         }
